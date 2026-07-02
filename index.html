@@ -488,8 +488,6 @@
       inset: 0;
       z-index: 1000;
       display: none;
-      align-items: center;
-      justify-content: center;
       padding: 4vmin;
       background: rgba(10, 9, 7, 0.82);
       backdrop-filter: blur(8px);
@@ -497,20 +495,31 @@
       cursor: zoom-out;
       opacity: 0;
       transition: opacity 0.25s ease;
+      /* 확대 이미지가 화면보다 크면 좌우·상하로 스크롤해서 확인 */
+      overflow: auto;
+      overscroll-behavior: contain;        /* 뒤 페이지로 스크롤 전파 차단 */
+      -webkit-overflow-scrolling: touch;
     }
 
-    .lightbox.open { display: flex; opacity: 1; }
+    .lightbox.open { display: block; opacity: 1; }
 
     .lightbox img {
-      max-width: 92vw;
-      max-height: 92vh;
+      display: block;
+      /* 세로는 화면에 맞추고, 가로가 넓은 도면은 좌우 스크롤로 확인 */
+      height: 90vh;
+      width: auto;
+      max-width: none;
+      margin: 5vh auto;
       border-radius: var(--r-lg);
       box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
-      transform: scale(0.96);
+      transform: scale(0.97);
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .lightbox.open img { transform: scale(1); }
+
+    /* 라이트박스가 열려 있는 동안 뒤 페이지 스크롤 잠금 */
+    html.lb-lock, body.lb-lock { overflow: hidden !important; height: 100%; }
 
     .img-slot {
       aspect-ratio: 4 / 3;
@@ -553,10 +562,20 @@
 
     /* ─── Responsive ─────────────────────────────────────────────── */
     @media (max-width: 640px) {
+      /* 긴 슬라이드에서 스크롤이 튕기지 않도록 스냅 해제 (자연 스크롤) */
+      html { scroll-snap-type: none; }
+      .slide { scroll-snap-align: none; }
+
       .slide { padding: 48px 5%; }
       .two-col, .two-col-wide, .card-grid.col-2, .card-grid.col-3 {
         grid-template-columns: 1fr;
       }
+
+      /* 썸네일이 너무 작지 않도록 2열로 통일 (인라인 3·4·5열 오버라이드) */
+      .img-gallery { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+      .img-gallery > img { aspect-ratio: 4 / 3; }
+      /* 배치도 등 전체폭 이미지는 2열을 가로질러 꽉 차게 */
+      .img-gallery > img.full-span { grid-column: 1 / -1; aspect-ratio: auto; height: auto; }
     }
   </style>
 </head>
@@ -1109,7 +1128,7 @@
     <div class="gap-md">
       <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">공간 배치 · 감각존 구성</div>
       <div class="img-gallery" style="grid-template-columns: 1fr;">
-        <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/%EC%98%88%EC%83%81%20%EB%B0%B0%EC%B9%98%EB%8F%84.png" alt="예상 배치도" style="aspect-ratio: auto; height: auto; object-fit: contain;">
+        <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/%EC%98%88%EC%83%81%20%EB%B0%B0%EC%B9%98%EB%8F%84.png" alt="예상 배치도" class="full-span" style="aspect-ratio: auto; height: auto; object-fit: contain;">
       </div>
       <div class="t-caption muted gap-xs" style="opacity:0.7;">
         존별 예상 배치도 (현장 실측 전 가안)
@@ -1617,11 +1636,19 @@
     img.addEventListener('click', () => {
       lightboxImg.src = img.src;
       lightbox.classList.add('open');
+      // 뒤 페이지 스크롤 잠금 (상하 스크롤이 페이지로 새지 않게)
+      document.documentElement.classList.add('lb-lock');
+      document.body.classList.add('lb-lock');
+      // 확대 뷰는 항상 좌상단부터 보이도록 스크롤 초기화
+      lightbox.scrollTop = 0;
+      lightbox.scrollLeft = 0;
     });
   });
 
   function closeLightbox() {
     lightbox.classList.remove('open');
+    document.documentElement.classList.remove('lb-lock');
+    document.body.classList.remove('lb-lock');
   }
 
   lightbox.addEventListener('click', closeLightbox);
