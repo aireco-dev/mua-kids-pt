@@ -488,7 +488,6 @@
       inset: 0;
       z-index: 1000;
       display: none;
-      padding: 4vmin;
       background: rgba(10, 9, 7, 0.82);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
@@ -503,13 +502,24 @@
 
     .lightbox.open { display: block; opacity: 1; }
 
+    /* 이미지가 뷰포트보다 작으면 중앙정렬, 크면 스크롤 시작점이 항상 (0,0)이 되도록
+       min-height/min-width 래퍼 + flex 사용 (margin:auto 중앙정렬은 스크롤 컨테이너와
+       만나면 브라우저마다 초기 스크롤 위치가 달라져 "화면이 이상하게 뜨는" 원인이 됨) */
+    .lightbox-inner {
+      min-height: 100%;
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4vmin;
+    }
+
     .lightbox img {
       display: block;
       /* 세로는 화면에 맞추고, 가로가 넓은 도면은 좌우 스크롤로 확인 */
       height: 90vh;
       width: auto;
       max-width: none;
-      margin: 5vh auto;
       border-radius: var(--r-lg);
       box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
       transform: scale(0.97);
@@ -519,7 +529,18 @@
     .lightbox.open img { transform: scale(1); }
 
     /* 라이트박스가 열려 있는 동안 뒤 페이지 스크롤 잠금 */
-    html.lb-lock, body.lb-lock { overflow: hidden !important; height: 100%; }
+    /* 라이트박스가 열려 있는 동안 뒤 페이지 스크롤 잠금.
+       overflow:hidden 만으로는 iOS Safari에서 배경 터치 스크롤이 막히지 않고
+       닫을 때 스크롤 위치가 유실되는 문제가 있어, body를 position:fixed로
+       고정하고 JS에서 scrollY를 저장/복원하는 표준 방식을 사용한다. */
+    html.lb-lock { overflow: hidden !important; }
+    body.lb-lock {
+      position: fixed;
+      left: 0;
+      right: 0;
+      width: 100%;
+      overflow: hidden !important;
+    }
 
     .img-slot {
       aspect-ratio: 4 / 3;
@@ -1623,7 +1644,9 @@
 
 <!-- 라이트박스 오버레이 -->
 <div class="lightbox" id="lightbox">
-  <img src="" alt="확대 이미지">
+  <div class="lightbox-inner">
+    <img src="" alt="확대 이미지">
+  </div>
 </div>
 
 
@@ -1632,13 +1655,30 @@
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = lightbox.querySelector('img');
 
+  // 뒤 페이지 스크롤 잠금: body를 position:fixed로 고정하고 원래 스크롤
+  // 위치를 top 음수값으로 보존한다. overflow:hidden만 쓰면 iOS Safari에서
+  // 배경이 여전히 스크롤되거나, 닫을 때 스크롤 위치가 0으로 튕기는 문제가 있다.
+  let savedScrollY = 0;
+
+  function lockPageScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.documentElement.classList.add('lb-lock');
+    document.body.classList.add('lb-lock');
+    document.body.style.top = `-${savedScrollY}px`;
+  }
+
+  function unlockPageScroll() {
+    document.documentElement.classList.remove('lb-lock');
+    document.body.classList.remove('lb-lock');
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollY);
+  }
+
   document.querySelectorAll('.img-gallery > img').forEach(img => {
     img.addEventListener('click', () => {
       lightboxImg.src = img.src;
       lightbox.classList.add('open');
-      // 뒤 페이지 스크롤 잠금 (상하 스크롤이 페이지로 새지 않게)
-      document.documentElement.classList.add('lb-lock');
-      document.body.classList.add('lb-lock');
+      lockPageScroll();
       // 확대 뷰는 항상 좌상단부터 보이도록 스크롤 초기화
       lightbox.scrollTop = 0;
       lightbox.scrollLeft = 0;
@@ -1647,8 +1687,7 @@
 
   function closeLightbox() {
     lightbox.classList.remove('open');
-    document.documentElement.classList.remove('lb-lock');
-    document.body.classList.remove('lb-lock');
+    unlockPageScroll();
   }
 
   lightbox.addEventListener('click', closeLightbox);
