@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>무아 베이비 카페&스튜디오 — 인테리어 미팅</title>
+  <style>
+    /* ─── Design tokens (adapted from DESIGN-apple.md) ─────────── */
+    :root {
+      --primary:        #B5673A;   /* 무아 테라코타 — interactive accent */
+      --primary-dark:   #8F4F28;   /* pressed / darker */
+      --primary-glow:   #E0855A;   /* on dark surfaces */
+      --ink:            #1d1d1f;
+      --ink-muted:      #7a7a7a;
+      --canvas:         #faf6f1;
+      --parchment:      #f3ece1;
+      --pearl:          #f5f0ea;
+      --tile:           #1e1c1a;   /* warm dark — 무아 편향 */
+      --tile-2:         #272522;
+      --tile-3:         #201e1c;
+      --void:           #0a0907;
+      --hairline:       #d8cdc0;
+      --soft:           #ece5db;
+      --muted-on-dark:  rgba(255,255,255,0.55);
+      --body-on-dark:   rgba(255,255,255,0.90);
+
+      --f-display: -apple-system, "SF Pro Display", "Apple SD Gothic Neo",
+                   "Noto Sans KR", system-ui, sans-serif;
+      --f-text:    -apple-system, "SF Pro Text", "Apple SD Gothic Neo",
+                   "Noto Sans KR", system-ui, sans-serif;
+
+      --r-sm:   8px;
+      --r-md:   14px;
+      --r-lg:   18px;
+      --r-pill: 9999px;
+
+      --shadow-product: 0 3px 30px 0 rgba(0,0,0,0.22);
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--f-text);
+      background: var(--void);
+    }
+
+    /* ─── Slide shell ────────────────────────────────────────────── */
+    .slide {
+      min-height: 100svh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 6%;
+      position: relative;
+    }
+
+    .slide-inner {
+      width: 100%;
+      max-width: 940px;
+    }
+
+    /* Surface variants */
+    .dark        { background: var(--tile);    color: #fff; }
+    .dark-2      { background: var(--tile-2);  color: #fff; }
+    .dark-3      { background: var(--tile-3);  color: #fff; }
+    .void-black  { background: var(--void);    color: #fff; }
+    .light       { background: var(--canvas);  color: var(--ink); }
+    .light-parchment { background: var(--parchment); color: var(--ink); }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .t-hero {
+      font-family: var(--f-display);
+      font-size: clamp(38px, 5.5vw, 60px);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .t-display {
+      font-family: var(--f-display);
+      font-size: clamp(26px, 3.8vw, 42px);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    .t-section {
+      font-family: var(--f-display);
+      font-size: clamp(20px, 2.8vw, 30px);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .t-lead {
+      font-family: var(--f-display);
+      font-size: clamp(16px, 2vw, 21px);
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    .t-body {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.55;
+      letter-spacing: -0.01em;
+    }
+
+    .t-caption {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+    }
+
+    .t-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ─── Color helpers ──────────────────────────────────────────── */
+    .accent           { color: var(--primary); }
+    .accent-glow      { color: var(--primary); }
+    .muted            { color: var(--ink-muted); }
+    .muted-dark       { color: var(--ink-muted); }
+
+    .dark .muted-dark, .dark-2 .muted-dark,
+    .dark-3 .muted-dark, .void-black .muted-dark {
+      color: var(--muted-on-dark);
+    }
+
+    /* ─── Spacing ────────────────────────────────────────────────── */
+    .gap-xs { margin-top: 8px; }
+    .gap-sm { margin-top: 16px; }
+    .gap-md { margin-top: 28px; }
+    .gap-lg { margin-top: 48px; }
+    .gap-xl { margin-top: 72px; }
+
+    /* ─── Pill tag ───────────────────────────────────────────────── */
+    .pill {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      font-family: var(--f-text);
+      font-size: 13px;
+      font-weight: 400;
+      padding: 7px 18px;
+      border-radius: var(--r-pill);
+      text-decoration: none;
+    }
+
+    .pill-outline {
+      display: inline-block;
+      border: 1.5px solid var(--primary-glow);
+      color: var(--primary-glow);
+      font-size: 13px;
+      padding: 6px 16px;
+      border-radius: var(--r-pill);
+    }
+
+    .pill-neutral {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: var(--r-pill);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .light .pill-neutral, .light-parchment .pill-neutral {
+      background: var(--soft);
+      color: var(--ink-muted);
+      border-color: var(--hairline);
+    }
+
+    /* ─── Quote ──────────────────────────────────────────────────── */
+    .quote {
+      border-left: 3px solid var(--primary-glow);
+      padding: 18px 24px;
+      font-family: var(--f-display);
+      font-size: clamp(15px, 2vw, 19px);
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    .light .quote, .light-parchment .quote {
+      border-left-color: var(--primary);
+    }
+
+    /* ─── Tables ─────────────────────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+
+    th {
+      text-align: left;
+      font-family: var(--f-text);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-bottom: 1.5px solid;
+    }
+
+    td {
+      padding: 11px 14px;
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .dark table th,  .dark-2 table th,
+    .dark-3 table th, .void-black table th {
+      border-color: rgba(255,255,255,0.15);
+      color: var(--muted-on-dark);
+    }
+    .dark table td, .dark-2 table td,
+    .dark-3 table td, .void-black table td {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      color: var(--body-on-dark);
+    }
+
+    .light table th, .light-parchment table th {
+      border-color: var(--hairline);
+      color: var(--ink-muted);
+    }
+    .light table td, .light-parchment table td {
+      border-bottom: 1px solid var(--soft);
+      color: var(--ink);
+    }
+
+    td strong { font-weight: 600; }
+
+    /* ─── Info cards ─────────────────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .card-grid.col-2 { grid-template-columns: repeat(2, 1fr); }
+    .card-grid.col-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      padding: 24px;
+      border-radius: var(--r-lg);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .light .card, .light-parchment .card {
+      background: var(--pearl);
+      border-color: var(--hairline);
+    }
+
+    .card-num {
+      font-family: var(--f-display);
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .card-label {
+      font-size: 13px;
+      margin-top: 6px;
+      opacity: 0.65;
+    }
+
+    .card-body {
+      font-size: 14px;
+      line-height: 1.55;
+      margin-top: 10px;
+      opacity: 0.85;
+    }
+
+    /* ─── Layer box ──────────────────────────────────────────────── */
+    .layer {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px 20px;
+      margin: 10px 0;
+      border-radius: var(--r-sm);
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--primary-glow);
+    }
+
+    .light .layer, .light-parchment .layer {
+      background: var(--soft);
+      border-left-color: var(--primary);
+    }
+
+    .layer-num {
+      font-family: var(--f-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary-glow);
+      flex-shrink: 0;
+      width: 28px;
+    }
+
+    .light .layer-num, .light-parchment .layer-num {
+      color: var(--primary);
+    }
+
+    .layer-text strong {
+      font-size: 14px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .layer-text span {
+      font-size: 13px;
+      opacity: 0.65;
+    }
+
+    /* ─── Badge ──────────────────────────────────────────────────── */
+    .badge-red  { background: #FF3B30; color: #fff; font-size: 11px;
+                  font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .badge-org  { background: #FF9500; color: #fff; font-size: 11px;
+                  font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .badge-grn  { background: #34C759; color: #fff; font-size: 11px;
+                  font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+    .badge-acc  { background: var(--primary); color: #fff; font-size: 11px;
+                  font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+
+    /* ─── Checklist ──────────────────────────────────────────────── */
+    .checklist { list-style: none; margin-top: 20px; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 11px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .light .checklist li,
+    .light-parchment .checklist li {
+      border-bottom-color: var(--soft);
+      color: var(--ink);
+    }
+
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .light .check-box,
+    .light-parchment .check-box { border-color: var(--hairline); }
+
+    /* ─── Divider ────────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 32px 0;
+    }
+
+    .light .divider, .light-parchment .divider {
+      border-top-color: var(--hairline);
+    }
+
+    /* ─── Two-column layout ──────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 32px;
+    }
+
+    .two-col-wide {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 48px;
+      margin-top: 32px;
+    }
+
+    /* ─── Slide-number chip ──────────────────────────────────────── */
+    .slide-num {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      opacity: 0.3;
+    }
+
+    /* ─── Fixed bottom nav ───────────────────────────────────────── */
+    #pt-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(20,18,16,0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9999px;
+      padding: 8px 16px;
+      z-index: 999;
+    }
+
+    #pt-nav button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    #pt-nav button:hover { color: #fff; }
+
+    #pt-counter {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--f-text);
+      font-size: 12px;
+      min-width: 52px;
+      text-align: center;
+    }
+
+    /* ─── Print ──────────────────────────────────────────────────── */
+    @media print {
+      html { scroll-snap-type: none; }
+      .slide { page-break-after: always; }
+      #pt-nav { display: none; }
+      .slide-num { opacity: 0.5; }
+    }
+
+    /* ─── 무아 컬럼 강조 ────────────────────────────────────────────── */
+    td.mua-cell {
+      background: rgba(181,103,58,0.07);
+      color: var(--ink);
+      border-left: 2px solid rgba(181,103,58,0.35);
+      font-weight: 600;
+    }
+
+    /* ─── 이미지 갤러리 ─────────────────────────────────────────────── */
+    .img-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .img-gallery > img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: var(--r-md);
+      display: block;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+    }
+
+    .img-gallery > img:hover {
+      transform: scale(1.04);
+      box-shadow: var(--shadow-product);
+    }
+
+    /* ─── 라이트박스 (클릭 시 중앙 확대) ─────────────────────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 4vmin;
+      background: rgba(10, 9, 7, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: zoom-out;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .lightbox.open { display: flex; opacity: 1; }
+
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      border-radius: var(--r-lg);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+      transform: scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lightbox.open img { transform: scale(1); }
+
+    .img-slot {
+      aspect-ratio: 4 / 3;
+      border: 1.5px dashed var(--hairline);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      position: relative;
+      background: var(--soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .img-slot:hover {
+      border-color: var(--primary);
+      background: rgba(181,103,58,0.05);
+    }
+
+    .img-slot img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .img-slot img.loaded { display: block; }
+    .img-slot img.loaded + .img-slot-label { display: none; }
+
+    .img-slot-label {
+      text-align: center;
+      font-size: 11px;
+      color: var(--ink-muted);
+      padding: 8px;
+      line-height: 1.4;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .slide { padding: 48px 5%; }
+      .two-col, .two-col-wide, .card-grid.col-2, .card-grid.col-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 01 — COVER
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide dark" id="s1">
+  <span class="slide-num">01 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted-dark gap-sm">인테리어 설계 요청서 · 2026. 7. 7</div>
+
+    <div class="t-hero gap-md">
+      무아<br>
+      베이비 카페&amp;스튜디오
+    </div>
+
+    <div class="t-lead muted-dark gap-md">
+      판교백현로 53 · 2층 54평, 3층 옥상 50평
+    </div>
+
+    <div class="gap-lg">
+      <span class="pill">공간 설계 요청</span>
+      &nbsp;
+      <span class="pill-outline">인테리어 미팅 자료</span>
+    </div>
+
+    <hr class="divider" style="margin-top: 56px;">
+
+    <div class="t-caption muted-dark" style="opacity:0.4">
+      본 자료는 2026년 7월 7일 인테리어 업체 현장 미팅용으로 작성되었습니다.
+      수치는 현장 실측 전 기획안이며, 미팅 후 갱신됩니다.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 02 — BRAND CONCEPT
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s2">
+  <span class="slide-num">02 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted-dark gap-sm">브랜드 & 컨셉</div>
+    <div class="t-display gap-md">무아는 어떤 공간인가</div>
+
+    <div class="quote gap-md">
+      <span style="opacity:0.6; font-size:0.85em;">베이비카페이면서 스튜디오 — 스튜디오이면서 베이비카페.</span><br>
+      "아기와 보호자가 베이비카페에서 놀이를 즐기면서,<br>
+      자연스러운 모습을 <span class="accent-glow">사진으로 남길 수 있는 공간</span>."<br>
+      <span style="opacity:0.6; font-size:0.85em;">대형 정글짐·구조물 없이 0~24개월 영아 대상 베이비카페.</span>      
+    </div>
+
+    <div class="gap-md" style="color:var(--ink-muted); font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">사업 구조</div>
+
+    <div class="layer gap-xs">
+      <div class="layer-num">1</div>
+      <div class="layer-text">
+        <strong>감각 놀이 + 솥밥 F&amp;B</strong>
+        <span>BEP 충족 주력 레이어 — 입장권·솥밥 조리 직접 판매</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num">2</div>
+      <div class="layer-text">
+        <strong>스튜디오 레이어</strong>
+        <span>재방문·바이럴 엔진 — 공간 전체가 배경, 스마트폰으로도 인스타 사진</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num">3</div>
+      <div class="layer-text">
+        <strong>돌잔치·베이비 파티 대관</strong>
+        <span>추가 수익</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 03 — DIFFERENTIATION
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s3">
+  <span class="slide-num">03 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted gap-sm" style="color:var(--primary)">차별화 포인트</div>
+    <div class="t-display gap-md">기존 베이비카페와 무엇이 다른가</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">항목</th>
+          <th style="width:39%">기존 베이비카페</th>
+          <th style="width:39%; background:rgba(181,103,58,0.10); color:var(--primary); border-bottom:2px solid var(--primary);">무아</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="muted">놀이 소재</td>
+          <td>플라스틱·인공 매트</td>
+          <td class="mua-cell"><strong>원목·자연소재 중심</strong></td>
+        </tr>
+        <tr>
+          <td class="muted">교구·장난감</td>
+          <td>플라스틱 완구 위주</td>
+          <td class="mua-cell"><strong>자연소재 50%+ 비중 구성</strong></td>
+        </tr>
+        <tr>
+          <td class="muted">음식</td>
+          <td>레토르트·냉동 데우기</td>
+          <td class="mua-cell"><strong>솥밥 직접 조리</strong></td>
+        </tr>
+        <tr>
+          <td class="muted">사진·촬영</td>
+          <td>없거나 부실한 포토존</td>
+          <td class="mua-cell"><strong>공간 전체가 스튜디오</strong></td>
+        </tr>
+        <tr>
+          <td class="muted">타겟 연령</td>
+          <td>0~36개월</td>
+          <td class="mua-cell"><strong>0~24개월 전문</strong></td>
+        </tr>
+        <tr>
+          <td class="muted">자연광</td>
+          <td>인공 조명 위주</td>
+          <td class="mua-cell"><strong>남향 대창 · 나무·잔디 배경</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 기존 베이비카페 참고 이미지 -->
+    <div class="gap-md">
+      <div class="layer gap-xs" style="align-items:center; margin-bottom:14px; padding:12px 16px; border-radius:var(--r-md); background:rgba(255,59,48,0.08); border-left:4px solid #FF3B30;">
+        <span class="badge-red" style="flex-shrink:0;">✕ 지양</span>
+        <div style="font-size:15px; font-weight:700; color:#FF3B30; letter-spacing:-0.01em;">기존 베이비카페 이미지 — 무아에서 <span style="text-decoration:underline; text-underline-offset:3px;">탈피하고 싶은</span> 방향</div>
+      </div>
+      <div class="img-gallery">
+          <img src="Images/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%87%E1%85%A1%E1%86%AB%E1%84%87%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%B5%E1%84%8F%E1%85%A1%E1%84%91%E1%85%A6/general_babycafe_1.png">
+          <img src="Images/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%87%E1%85%A1%E1%86%AB%E1%84%87%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%B5%E1%84%8F%E1%85%A1%E1%84%91%E1%85%A6/general_babycafe_2.png">
+          <img src="Images/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%87%E1%85%A1%E1%86%AB%E1%84%87%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%B5%E1%84%8F%E1%85%A1%E1%84%91%E1%85%A6/general_babycafe_3.png">
+          <img src="Images/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%87%E1%85%A1%E1%86%AB%E1%84%87%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%B5%E1%84%8F%E1%85%A1%E1%84%91%E1%85%A6/general_babycafe_4.png">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 04 — KEY ASSET: 남향 대창
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s4">
+  <span class="slide-num">04 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag" style="color:var(--primary); letter-spacing:0.12em; font-size:11px; font-weight:600; text-transform:uppercase;">이 공간만의 자산 — 설계에 반드시 반영</div>
+
+    <div class="t-hero gap-sm">
+      남향 대창<br>
+      <span class="accent-glow">자연광 ·  나무 · 잔디 뷰</span>
+    </div>
+
+    <div class="t-lead gap-md" style="color:var(--ink-muted); max-width:620px;">
+      창 너머로 나무와 잔디가 보이는 남향 대형 창.
+      인공 포토월 없이도 그린·자연 배경이 완성됩니다.
+    </div>
+
+    <div class="two-col gap-md">
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px;">왜 중요한가</div>
+        <div class="layer gap-xs">
+          <div class="layer-num" style="font-size:16px;">☀</div>
+          <div class="layer-text">
+            <strong>자연광</strong>
+            <span>남향 — 연중 가장 풍부하고 안정적인 자연광. 낮 시간 조명 없이 촬영 가능</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px;">🌿</div>
+          <div class="layer-text">
+            <strong>자연 배경</strong>
+            <span>창 너머 나무·잔디가 사진 배경이 됨 — 설치 비용 제로</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px;">📸</div>
+          <div class="layer-text">
+            <strong>무아의 핵심 경쟁력</strong>
+            <span>원목 실내 + 자연 뷰 = 공간 전체가 자연 스튜디오</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px;">설계 원칙 (타협 없음)</div>
+        <ul class="checklist" style="margin-top:12px;">
+          <li>
+            <div class="check-box"></div>
+            창을 가리는 구조물·파티션·선반 설치 <strong>금지</strong>
+          </li>
+          <li>
+            <div class="check-box"></div>
+            창가를 다이닝존 + 1순위 포토앵커로 배치
+          </li>
+          <li>
+            <div class="check-box"></div>
+            커튼은 <strong>쉬어 소재</strong>만 — 블라인드·암막 금지
+          </li>
+          <li>
+            <div class="check-box"></div>
+            창틀·창가에 화분·린넨·원목 오브제 소품 배치
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 04b — KEY ASSET: 옥상 테라스
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s4b">
+  <span class="slide-num">05 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag" style="color:var(--primary); letter-spacing:0.12em; font-size:11px; font-weight:600; text-transform:uppercase;">이 공간만의 자산 — 설계에 반드시 반영</div>
+
+    <div class="t-hero gap-sm">
+      옥상 테라스<br>
+      <span class="accent-glow">야외 확장 · 사계절 · 하늘 뷰</span>
+    </div>
+
+    <div class="t-lead gap-md" style="color:var(--ink-muted); max-width:640px;">
+      실내 54평에 더해진 3층 약 50평 옥상.
+      대부분의 베이비카페가 갖지 못한 <span class="accent">야외 자연 공간</span>이 무아의 두 번째 자산입니다.
+    </div>
+
+    <div class="two-col gap-md">
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px;">왜 중요한가</div>
+        <div class="layer gap-xs">
+          <div class="layer-num" style="font-size:16px;">🌳</div>
+          <div class="layer-text">
+            <strong>야외 확장</strong>
+            <span>실내 놀이 → 옥상 흙놀이·텃밭 체험으로 확장. 경쟁 베이비카페에 없는 공간</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px;">🎉</div>
+          <div class="layer-text">
+            <strong>대관 수익원</strong>
+            <span>돌잔치·가족 BBQ·베이비 파티 — 실내와 분리된 별도 수익 레이어</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px;">📷</div>
+          <div class="layer-text">
+            <strong>사계절 야외 스튜디오</strong>
+            <span>잔디·하늘 배경 + 시즌 이벤트(봄 텃밭·가을 단풍) 촬영 앵커</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px;">설계 반영 원칙</div>
+        <ul class="checklist" style="margin-top:12px;">
+          <li>
+            <div class="check-box"></div>
+            실내↔옥상 <strong>동선 안전</strong> — 계단 폭·핸드레일, 유아차·아기 안고 이동
+          </li>
+          <li>
+            <div class="check-box"></div>
+            파고라·어닝으로 <strong>그늘·비 대응</strong> (가설건축물 신고 대상)
+          </li>
+          <li>
+            <div class="check-box"></div>
+            난간 <strong>1.2m 이상</strong> + 방수·배수 우선 시공
+          </li>
+          <li>
+            <div class="check-box"></div>
+            전기·수도 인입 — 흙놀이·BBQ·야외 조명 지원
+          </li>
+        </ul>
+        <div class="gap-sm t-caption muted" style="opacity:0.7;">
+          ※ 운영 방향(A·B·C안)과 상세 스펙은 뒤 &lsquo;옥상 테라스&rsquo; 슬라이드 참조.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 05 — EXISTING SPACE MAXIMIZATION
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s5">
+  <span class="slide-num">06 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">핵심 설계 요청</div>
+    <div class="t-display gap-sm">기존 공간 최대 활용</div>
+
+    <div class="quote gap-sm">
+      "부수기보다 살리는 방향으로 설계해 주세요."
+    </div>
+
+    <div class="t-body gap-sm" style="max-width:640px; color:var(--ink-muted);">
+      현재 상가에 설치된 인테리어 자재·구조물·마감재를 가급적 그대로 활용합니다.
+      무아 톤(원목·자연소재·웜 컬러)과 충돌이 없는 기존 요소는 철거 없이 유지 또는 보완 수준으로 사용합니다.
+    </div>
+
+    <table class="gap-md">
+      <thead>
+        <tr>
+          <th style="width:28%">항목</th>
+          <th>현장 확인 내용</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>바닥 마감재</strong></td>
+          <td>현재 바닥 소재·상태 확인 — 원목 마루 위 매트 포설 가능 여부, 교체 vs 덮기 판단</td>
+        </tr>
+        <tr>
+          <td><strong>벽면·천장 마감</strong></td>
+          <td>현재 색상·소재 — 재도장·덧마감으로 무아 톤에 맞출 수 있는지</td>
+        </tr>
+        <tr>
+          <td><strong>기존 조명 기구</strong></td>
+          <td>현재 기구·배선 재활용 가능 여부 — 전면 교체 vs 부분 교체</td>
+        </tr>
+        <tr>
+          <td><strong>가벽·파티션·선반</strong></td>
+          <td>위치·형태가 새 레이아웃과 충돌하는지, 활용 가능한 구조물 여부</td>
+        </tr>
+        <tr>
+          <td><strong>주방·위생 설비</strong></td>
+          <td>기존 배관·전기 인입선 위치 — 신규 공사 최소화 가능 여부</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card-grid col-3 gap-md">
+      <div class="card" style="border-left:3px solid #34C759;">
+        <div style="font-weight:600; font-size:13px; color:#34C759;">유지</div>
+        <div class="card-body">컨셉과 충돌 없으면 그대로</div>
+      </div>
+      <div class="card" style="border-left:3px solid #FF9500;">
+        <div style="font-weight:600; font-size:13px; color:#FF9500;">덮기·보완</div>
+        <div class="card-body">기능 문제 없으면 철거 불필요</div>
+      </div>
+      <div class="card" style="border-left:3px solid #FF3B30;">
+        <div style="font-weight:600; font-size:13px; color:#FF3B30;">교체·철거</div>
+        <div class="card-body">반드시 필요한 항목만</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 06 — EXISTING SPACE PHOTOS (현장 사진)
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s5b">
+  <span class="slide-num">07 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">현장 기록</div>
+    <div class="t-display gap-sm">기존 상가 현황 사진</div>
+
+    <div class="t-body gap-sm" style="max-width:640px; color:var(--ink-muted);">
+      현재 상가에 설치된 인테리어·구조물·마감 상태입니다.
+      어떤 요소를 살리고 무엇을 보완할지 판단하는 기준 자료 — 사진을 클릭하면 크게 볼 수 있습니다.
+    </div>
+
+    <div class="img-gallery gap-md" style="grid-template-columns: repeat(6, 1fr);">
+      <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/IMG_3315.jpg" alt="기존 상가 현황 1" style="grid-column: span 2;">
+      <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/IMG_3316.jpg" alt="기존 상가 현황 2" style="grid-column: span 2;">
+      <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/IMG_3317.jpg" alt="기존 상가 현황 3" style="grid-column: span 2;">
+      <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/IMG_3318.jpg" alt="기존 상가 현황 4" style="grid-column: span 3;">
+      <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/IMG_3319.jpg" alt="기존 상가 현황 5" style="grid-column: span 3;">
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 07 — SPACE ALLOCATION
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s6">
+  <span class="slide-num">08 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted-dark gap-sm">공간 전체 배분</div>
+    <div class="t-display gap-md">54평 평면 개요(예시)</div>
+
+    <div class="two-col-wide">
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>공간</th>
+              <th style="width:18%">면적</th>
+              <th>역할</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>감각 놀이존</strong></td>
+              <td><strong class="accent-glow">28평</strong></td>
+              <td>개방형 스튜디오 겸 놀이 공간</td>
+            </tr>
+            <tr>
+              <td><strong>부모 다이닝존</strong></td>
+              <td><strong class="accent-glow">10평</strong></td>
+              <td>전 좌식 · 스튜디오 겸용</td>
+            </tr>
+            <tr>
+              <td>주방</td>
+              <td>4평</td>
+              <td>솥밥 특화 상업 주방</td>
+            </tr>
+            <tr>
+              <td>카운터·음료바</td>
+              <td>4평</td>
+              <td>체크인·결제·음료 원스톱</td>
+            </tr>
+            <tr>
+              <td>수유실·기저귀</td>
+              <td>3평</td>
+              <td>독립 룸 · 급배수 필요</td>
+            </tr>
+            <tr>
+              <td>화장실</td>
+              <td>2평</td>
+              <td>남녀 분리 or 공용 (현장 확인)</td>
+            </tr>
+            <tr>
+              <td>동선·입구·여백</td>
+              <td>3평</td>
+              <td>계단~카운터 진입로</td>
+            </tr>
+            <tr style="border-top:1.5px solid var(--hairline)">
+              <td><strong>합계</strong></td>
+              <td><strong>54평</strong></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px;">동선 원칙</div>
+        <div class="layer gap-sm">
+          <div class="layer-num" style="font-size:16px;">👁</div>
+          <div class="layer-text">
+            <strong>부모 시선</strong>
+            <span>다이닝존에 앉아서 감각놀이존 전체가 보여야 한다</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px;">🍱</div>
+          <div class="layer-text">
+            <strong>시선 동선</strong>
+            <span>입구에서 시계방향</span>
+          </div>
+        </div>
+        <div class="gap-lg">
+          <div class="t-caption muted-dark">
+            ※ ASCII 배치도는 현장 실측 전 가안.<br>
+            미팅 중 실측 도면으로 즉시 갱신 예정.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 07 — 감각 놀이존 24평
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s7">
+  <span class="slide-num">09 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">3-1. 존별 설계 요청</div>
+    <div class="t-display gap-xs">감각 놀이존</div>
+    <div class="t-section accent gap-xs">28평 — 개방형 스튜디오 겸 놀이 공간</div>
+
+    <div class="t-body gap-md muted" style="max-width:620px;">
+      넓은 개방형 공간. 부분/일부 파티션을 이용한 포토존 구성.<br>
+      어느 방향을 찍어도 배경이 되는 공간 — 아이가 노는 모습 그대로가 사진이 된다.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:26%">항목</th>
+          <th>내용</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>바닥</strong></td>
+          <td>원목 마루 시공 위 <strong>안전 매트 전면 포설</strong></td>
+        </tr>
+        <tr>
+          <td><strong>교구·장난감</strong></td>
+          <td>원목·자연소재 교구 위주 (50%+), 플라스틱 완구 혼합. <strong>이동 가능한</strong> 낮은 선반에 배치</td>
+        </tr>
+        <tr>
+          <td><strong>건식 흙놀이</strong></td>
+          <td>무독성 모래·자연 흙, <strong>건식 운영</strong> (물 없음). 별도 매트 위 설치, 이동·청소 용이하게</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="two-col gap-md">
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">필수 공사</div>
+        <ul class="checklist" style="margin-top:0">
+          <li><div class="check-box"></div>안전 매트 전면 포설 (영아 낙상 대응)</li>
+          <li><div class="check-box"></div>에어컨·환기 — 영아 직접 바람 차단</li>
+          <li><div class="check-box"></div>조명 — 직하형 다운라이트 <strong>금지</strong></li>
+        </ul>
+      </div>
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">인테리어 방향</div>
+        <ul class="checklist" style="margin-top:0">
+          <li><div class="check-box"></div>가급적 구역 파티션 없음 — 오픈 공간 유지</li>
+          <li><div class="check-box"></div>벽면</li>
+          <li><div class="check-box"></div>바닥 매트</li>
+          <li><div class="check-box"></div>교구 선반: 이동 가능한 원목 (높이 100cm↓)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 08b — 감각존·포토존 레퍼런스 이미지
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s7b">
+  <span class="slide-num">10 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">3-1. 감각 놀이존 — 레퍼런스</div>
+    <div class="t-display gap-xs">이런 공간을 만들고 싶습니다</div>
+
+    <div class="t-body gap-sm muted" style="max-width:640px;">
+      감각 놀이존과 포토존이 실제로 어떤 모습인지 참고 이미지로 정리했습니다.
+      이미지를 클릭하면 크게 볼 수 있습니다.
+    </div>
+
+    <!-- 공간 배치 · 감각존 -->
+    <div class="gap-md">
+      <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">공간 배치 · 감각존 구성</div>
+      <div class="img-gallery" style="grid-template-columns: 1fr;">
+        <img src="Images/%EA%B8%B0%EC%A1%B4%EC%8B%9C%EC%84%A4%EB%AC%BC/%EC%98%88%EC%83%81%20%EB%B0%B0%EC%B9%98%EB%8F%84.png" alt="예상 배치도" style="aspect-ratio: auto; height: auto; object-fit: contain;">
+      </div>
+      <div class="t-caption muted gap-xs" style="opacity:0.7;">
+        존별 예상 배치도 (현장 실측 전 가안)
+      </div>
+    </div>
+
+    <!-- 포토존 컨셉 레퍼런스 -->
+    <div class="gap-md">
+      <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">포토존 컨셉 레퍼런스 — 시즌·테마별 변경 예정</div>
+      <div class="img-gallery" style="grid-template-columns: repeat(5, 1fr);">
+        <img src="Images/%EB%AA%A8%EB%9E%98%EB%86%80%EC%9D%B4%ED%84%B0/%EC%86%8C%EA%B7%9C%EB%AA%A8%20%EB%AA%A8%EB%9E%98%EC%A1%B4.png" alt="소규모 모래존">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/IMG_3367.jpg" alt="가든·자연 테마 포토존">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/%ED%8F%AC%ED%86%A0%EC%A1%B4%EC%98%88%EC%8B%9C.jpg" alt="꽃밭 테마 포토존">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/%E1%84%91%E1%85%A9%E1%84%90%E1%85%A9%E1%84%8C%E1%85%A9%E1%86%AB%E1%84%82%E1%85%A9%E1%86%AF%E1%84%8B%E1%85%B5%E1%84%90%E1%85%A5.jpeg" alt="포토존놀이터">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/%E1%84%91%E1%85%A9%E1%84%90%E1%85%A9%E1%84%8C%E1%85%A9%E1%86%AB%E1%84%82%E1%85%A9%E1%86%AF%E1%84%8B%E1%85%B5%E1%84%90%E1%85%A52.jpeg" alt="포토존놀이터2">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/Pasted%20image%2020260701130805.png" alt="럭셔리 브랜드 테마 포토존">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/%E1%84%91%E1%85%A9%E1%84%90%E1%85%A9%E1%84%8C%E1%85%A9%E1%86%AB%E1%84%89%E1%85%A9%E1%84%91%E1%85%AE%E1%86%B7.jpeg" alt="포토존 레퍼런스">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/Pasted%20image%2020260701130740.png" alt="포토존 레퍼런스">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/Pasted%20image%2020260701125825.png" alt="포토존 레퍼런스">
+        <img src="Images/%ED%8F%AC%ED%86%A0%EC%A1%B4/IMG_3373.jpg" alt="전통 한복·돌잔치 테마 포토존">
+      </div>
+      <div class="t-caption muted gap-xs" style="opacity:0.7;">
+        시즌·테마별로 배경을 교체하는 포토존 — 가든/자연, 브랜드, 전통 한복·돌잔치 등
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 08 — 부모 다이닝존 10평
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s8">
+  <span class="slide-num">11 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">3-2. 존별 설계 요청</div>
+    <div class="t-display gap-xs">부모 다이닝존</div>
+    <div class="t-section accent gap-xs">10평 — 전 좌식 · 스튜디오 겸용</div>
+
+    <div class="quote gap-md">
+      "엄마 아빠도 제대로 밥 한 끼."<br>
+      <span style="opacity:0.6;">놀이존보다 단(약 20cm)을 올려서 경계 구분</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:16px;">공간 구성</div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px; color:var(--primary);">🪑</div>
+          <div class="layer-text">
+            <strong style="color:var(--ink);">전 좌식 테이블</strong>
+            <span style="color:var(--ink-muted);">일반 의자 테이블 없음. 바닥에 앉아 솥밥을 먹는 구성 전체</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div class="layer-num" style="font-size:16px; color:var(--primary);">🏮</div>
+          <div class="layer-text">
+            <strong style="color:var(--ink);">수유 코너</strong>
+            <span style="color:var(--ink-muted);">다이닝 한편, 린넨 커튼으로 분리 가능한 독립 공간</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">설계 요청</div>
+        <ul class="checklist" style="margin-top:0;">
+          <li><div class="check-box"></div><strong>창가 전면 배치</strong> — 남향 대창 앞 좌식, 창 너머 나무·잔디가 배경</li>
+          <li><div class="check-box"></div><strong>창 가림 금지</strong> — 쉬어 소재 커튼으로 빛만 확산</li>
+          <li><div class="check-box"></div>감각존과 시각 연결 — 파티션 없이 시야 트임</li>
+          <li><div class="check-box"></div>조명: 2700K 웜 톤 펜던트 (테이블당 1개)</li>
+          <li><div class="check-box"></div>수유 코너: 천장 매립 커튼 레일 + 린넨 커튼</li>
+          <li><div class="check-box"></div>바닥 매립 콘센트 (폰·유축기 충전)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 09 — 주방 + 카운터
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s9">
+  <span class="slide-num">12 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted-dark gap-sm">3-3 / 3-4. 존별 설계 요청</div>
+    <div class="t-display gap-md">건식 주방 (4평) + 카운터·음료바 (4평)</div>
+
+    <div class="two-col">
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px; margin-bottom:16px;">
+          주방 — 솥밥 특화 <span class="pill-neutral" style="font-size:10px; padding:2px 8px;">피크 동시 6솥</span>
+        </div>
+        <table>
+          <thead><tr><th>주요 설비</th><th style="width:30%">비고</th></tr></thead>
+          <tbody>
+            <tr><td>솥밥 인덕션 랙 800*300*1200mm</td><td>솥밥 랙</td></tr>
+            <tr><td>밧드 냉장/냉동고 1500*700*978mm</td><td>냉장고</td></tr>
+            <tr><td>개수대</td><td>개수대</td></tr>
+            <tr><td>조리대(인덕션)</td><td>조리대</td></tr>
+          </tbody>
+        </table>
+        <div class="gap-md">
+          <div class="t-tag muted-dark" style="font-size:10px; margin-bottom:12px;">
+            주방 레퍼런스 — 건식·솥밥 조리
+          </div>
+          <div class="img-gallery" style="grid-template-columns: repeat(3, 1fr); gap:8px;">
+            <img src="Images/%EC%A1%B0%EB%A6%AC%EC%8B%A4/%EC%86%A5%EB%B0%A5%EB%9E%99%EA%B7%9C%EA%B2%A9(800*300).png" alt="솥밥 랙">
+            <img src="Images/%EC%A1%B0%EB%A6%AC%EC%8B%A4/%EC%97%85%EC%86%8C%EC%9A%A9%EB%B0%A7%EB%93%9C%EB%83%89%EC%9E%A5%EA%B3%A0(1500*700*978).png" alt="밧드냉장고 1">
+            <img src="Images/%EC%A1%B0%EB%A6%AC%EC%8B%A4/%ED%98%B8%ED%98%B8%EC%86%A5%EB%B0%A5%EC%A3%BC%EB%B0%A93.png" alt="솥밥 건식 주방 레퍼런스 3">
+          </div>
+          <br/>
+        </div>
+
+      </div>
+
+      <div>
+        <div class="t-tag muted-dark" style="font-size:10px; margin-bottom:16px;">
+          카운터 <span class="pill-neutral" style="font-size:10px; padding:2px 8px;">입장&퇴장</span>
+        </div>
+        <table>
+          <thead><tr><th>주요 설비</th><th style="width:30%">비고</th></tr></thead>
+          <tbody>
+            <tr><td>컴퓨터</td><td></td></tr>
+            <tr><td>POS기</td><td></td></tr>
+            <tr><td>커피머신</td><td></td></tr>
+            <tr><td>냉장 쇼케이스</td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="gap-md">
+          <div class="t-tag muted-dark" style="font-size:10px; margin-bottom:12px;">
+            카운터 레퍼런스
+          </div>
+          <div class="img-gallery" style="grid-template-columns: repeat(3, 1fr); gap:8px;">
+            <div class="img-slot"><img src="" alt="카운터 레퍼런스 1"><span class="img-slot-label">카운터<br>이미지</span></div>
+          </div>
+          <br/>
+        </div>
+
+      </div>
+      
+    </div>
+      
+    
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 09b — 옥상 테라스 (3층 약 50평)
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s9b">
+  <span class="slide-num">13 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">3-5. 존별 설계 요청</div>
+    <div class="t-display gap-xs">옥상 테라스</div>
+    <div class="t-section accent gap-xs">3층 약 50평 — 방향 미정</div>
+
+    <div class="quote gap-md">
+      "2층 영업의 <strong>부대공간</strong> — 파고라·어닝 등 구조물은 <strong>가설건축물 신고</strong> 대상."<br>
+      <span style="opacity:0.6;">방수·난간·화기 허용 여부에 따라 A·B·C안 중 오늘 방향 결정</span>
+    </div>
+
+    <div class="t-tag muted" style="font-size:10px; margin-bottom:10px;">운영 방향 후보</div>
+    <div class="card-grid col-3">
+      <div class="card">
+        <div style="font-weight:600; font-size:14px; color:var(--ink); margin-bottom:6px;">A안 · 다이닝 테라스</div>
+        <div class="card-body">파고라 + BBQ 그릴 스테이션. 돌잔치·가족 대관 수익.<br><span style="opacity:0.6;">전제: 건물주 화기 허용</span></div>
+      </div>
+      <div class="card">
+        <div style="font-weight:600; font-size:14px; color:var(--ink); margin-bottom:6px;">B안 · 자연 체험존</div>
+        <div class="card-body">야외 흙·모래 놀이 + 텃밭(딸기·허브) 수확 체험.<br><span style="opacity:0.6;">봄·가을 집중 운영</span></div>
+      </div>
+      <div class="card" style="border:2px solid var(--primary); position:relative;">
+        <div style="position:absolute; top:14px; right:14px;"><span class="pill" style="font-size:11px; padding:4px 10px;">⭐</span></div>
+        <div style="font-weight:600; font-size:14px; color:var(--primary); margin-bottom:6px;">C안 · A+B 혼합</div>
+        <div class="card-body">자연 체험 15평 + 텃밭 8평 + 다이닝 테라스 22평 + 동선·난간 5평</div>
+      </div>
+    </div>
+
+    <div class="two-col gap-md">
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">공통 필수 공사 (방향 무관)</div>
+        <ul class="checklist" style="margin-top:0;">
+          <li><div class="check-box"></div><strong>방수층 점검·보수</strong> — 최우선</li>
+          <li><div class="check-box"></div><strong>난간 1.2m 이상</strong> 확인·보강 (법적 안전 기준)</li>
+          <li><div class="check-box"></div>파고라/어닝 <strong>가설건축물 신고</strong> (분당구청 건축과)</li>
+          <li><div class="check-box"></div>전기 인입(조명·기기) + 수도 인입(흙놀이·청소)</li>
+          <li><div class="check-box"></div>방수 조명 IP65↑ · 방수 콘센트 IP44↑</li>
+        </ul>
+      </div>
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">오늘 게이트 확인 (7/7)</div>
+        <ul class="checklist" style="margin-top:0;">
+          <li><div class="check-box"></div><strong>건물주 화기 허용 여부</strong> — A안 전제 조건</li>
+          <li><div class="check-box"></div>실제 면적·적재 하중 (테이블 몇 세트 가능)</li>
+          <li><div class="check-box"></div>기존 난간 높이 · 방수층 균열·누수</li>
+          <li><div class="check-box"></div>전기·수도 옥상 인입 루트</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="gap-md">
+      <div class="t-tag muted" style="font-size:10px; margin-bottom:12px;">레퍼런스 — 파고라·어닝·자연 체험</div>
+      <div class="img-gallery" style="grid-template-columns: repeat(5, 1fr);">
+        <img src="Images/%EC%98%A5%EC%83%81/%EC%98%A5%EC%83%81%EC%98%88%EC%8B%9C.png" alt="야외 모래놀이">
+        <img src="Images/%EC%98%A5%EC%83%81/%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%96%B4%EB%8B%9D.png" alt="시스템 어닝">
+        <img src="Images/%EC%98%A5%EC%83%81/%EC%98%A5%EC%83%81%EC%BA%A0%ED%95%91.png" alt="옥상 캠핑·다이닝">
+        <img src="Images/%EC%98%A5%EC%83%81/Pasted%20image%2020260701134908.png" alt="옥상 포토존">
+        <img src="Images/%EC%98%A5%EC%83%81/Pasted%20image%2020260701135024.png" alt="옥상 포토존2">
+      </div>
+      <div class="t-caption muted gap-xs" style="opacity:0.7;">
+        날씨 정책: 황사·폭염(33℃↑)·한파(5℃↓)·미세먼지 나쁨 시 폐쇄 → 실내 프로그램 전환 (영아 기상 기준 엄격 적용)
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 10 — LIGHTING SPEC
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s10">
+  <span class="slide-num">14 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">4. 스튜디오 기능</div>
+    <div class="t-display gap-md">조명 설계 — 전 공간 필수 기준</div>
+
+    <div class="quote gap-sm">
+      "포토존이 따로 있는 게 아니라, <strong>공간 전체가 언제든 배경이 되어야 한다.</strong>"
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">항목</th>
+          <th style="width:32%">필수 기준</th>
+          <th>위반 시 결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>색온도</strong></td>
+          <td><strong>2700K or 3000K 단일 통일</strong></td>
+          <td class="muted">혼용 시 사진 안에 두 가지 색온도 → 보정 불가</td>
+        </tr>
+        <tr>
+          <td><strong>연색지수</strong></td>
+          <td><strong>Ra 90 이상</strong> (포토존 Ra 95)</td>
+          <td class="muted">Ra80 일반 LED → 원목·피부 색감 왜곡</td>
+        </tr>
+        <tr>
+          <td><strong>플리커</strong></td>
+          <td><strong>Flicker-Free (전 제품)</strong></td>
+          <td class="muted">스마트폰 연사·동영상에 줄무늬 밴딩</td>
+        </tr>
+        <tr>
+          <td><strong>다운라이트</strong></td>
+          <td><strong>직하형 매입형 전면 금지</strong></td>
+          <td class="muted">아이 얼굴 "너구리 눈" 그림자</td>
+        </tr>
+        <tr>
+          <td><strong>광원 노출</strong></td>
+          <td><strong>직접 노출 금지 (확산 처리)</strong></td>
+          <td class="muted">영아 눈 자극 + 카메라 플레어</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card-grid col-3 gap-md">
+      <div class="card" style="border-top: 3px solid var(--primary);">
+        <div style="font-size:11px; font-weight:600; color:var(--primary); margin-bottom:8px;">LAYER 1 — 환경광</div>
+        <div class="card-body">코브 간접등 (천장 테두리 반사 확산). 아이 눈에 직접 닿지 않음</div>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--primary);">
+        <div style="font-size:11px; font-weight:600; color:var(--primary); margin-bottom:8px;">LAYER 2 — 보조광</div>
+        <div class="card-body">확산형 LED 패널. 조도 확보, 그림자 없이 균일하게</div>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--primary);">
+        <div style="font-size:11px; font-weight:600; color:var(--primary); margin-bottom:8px;">LAYER 3 — 포인트광</div>
+        <div class="card-body">각도 조절형 레일 스팟. 10시·2시 방향, 45도 교차</div>
+      </div>
+    </div>
+
+    <div class="gap-sm t-caption muted">
+      ※ 견적서에 Ra·플리커프리 스펙시트 제출 요청. 디밍 스위치 (감각존·포토존·수유실 회로) 필수.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 11 — PHOTO ANCHORS
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s11">
+  <span class="slide-num">15 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag muted-dark gap-sm">포토앵커 3곳</div>
+    <div class="t-display gap-md">공간 어느 방향도 배경이 된다</div>
+
+    <div class="card-grid col-3 gap-sm">
+      <div class="card" style="border:2px solid var(--primary); position:relative;">
+        <div style="position:absolute; top:16px; right:16px;">
+          <span class="pill" style="font-size:11px; padding:4px 10px;">⭐ 1순위</span>
+        </div>
+        <div style="font-size:22px; margin-bottom:12px;">🌿</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:6px; color:var(--primary);">앵커 A</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">남향 대창 창가</div>
+        <div style="font-size:13px; opacity:0.75; line-height:1.5;">자연광 + 창 너머 나무·잔디 뷰.<br>무아 최고 배경.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:22px; margin-bottom:12px;">🤍</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:6px; opacity:0.6;">앵커 B</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">감각존 배경벽</div>
+        <div style="font-size:13px; opacity:0.65; line-height:1.5;">크림 벽 + 원목 선반 + 레일 스팟.<br>실내 중심 포토존.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:22px; margin-bottom:12px;">🪵</div>
+        <div style="font-weight:600; font-size:16px; margin-bottom:6px; opacity:0.6;">앵커 C</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:8px;">원목 슬랫 코너</div>
+        <div style="font-size:13px; opacity:0.65; line-height:1.5;">원목 슬랫 벽면 + 교구 선반.<br>원목 질감 강조 포토존.</div>
+      </div>
+    </div>
+
+    <div class="quote gap-md">
+      앵커 A(창가)는 자연적 요소를 활용한 스튜디오.<br>
+      남향 자연광이 아이 얼굴을 정면에서 부드럽게 채워줌.
+    </div>
+
+    <div class="gap-md t-caption muted-dark">
+      스팟 레일은 아이가 아닌 <strong style="color:var(--primary);">10시·2시 방향</strong>에서 30~45도 각도로 —
+      정수리(12시) 방향 금지.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 12 — DESIGN DIRECTION
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light-parchment" id="s12">
+  <span class="slide-num">16 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">5. 디자인 방향</div>
+    <div class="t-display gap-md">색감 · 소재 · 톤</div>
+
+    <div class="two-col">
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:16px;">색채 팔레트</div>
+        <div class="layer">
+          <div style="width:14px; height:14px; border-radius:3px; background:#F5F0E8; flex-shrink:0; border:1px solid var(--hairline); margin-top:3px;"></div>
+          <div class="layer-text">
+            <strong style="color:var(--ink);">주조색</strong>
+            <span style="color:var(--ink-muted);">오프화이트 · 아이보리 · 내추럴 베이지</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div style="width:14px; height:14px; border-radius:3px; background:#C4A36A; flex-shrink:0; margin-top:3px;"></div>
+          <div class="layer-text">
+            <strong style="color:var(--ink);">원목색</strong>
+            <span style="color:var(--ink-muted);">파인 자연색(연노랑) · 자작 오일(미색) · 오크 오일(황갈)</span>
+          </div>
+        </div>
+        <div class="layer">
+          <div style="width:14px; height:14px; border-radius:3px; background:#C27A4D; flex-shrink:0; margin-top:3px;"></div>
+          <div class="layer-text">
+            <strong style="color:var(--ink);">포인트</strong>
+            <span style="color:var(--ink-muted);">머스터드(채도 40%↓) · 테라코타(채도 50%↓) · 세이지 그린</span>
+          </div>
+        </div>
+        <div class="layer" style="border-left-color: #FF3B30;">
+          <div style="width:14px; height:14px; border-radius:3px; background:linear-gradient(90deg,#f00,#00f); flex-shrink:0; margin-top:3px;"></div>
+          <div class="layer-text">
+            <strong style="color:#FF3B30;">금지색</strong>
+            <span style="color:var(--ink-muted);">순색 빨강·파랑 · 형광 계열 · 채도 높은 노랑</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="t-tag muted" style="font-size:10px; margin-bottom:16px;">주요 소재</div>
+        <table style="margin-top:0;">
+          <thead><tr><th>소재</th><th>용도</th></tr></thead>
+          <tbody>
+            <tr><td><strong>원목</strong> (파인·자작·오크)</td><td>가구·선반·카운터·슬랫 패널</td></tr>
+            <tr><td><strong>패브릭·린넨</strong></td><td>커튼·쿠션·방석 (세탁 가능)</td></tr>
+            <tr><td><strong>??</strong></td><td>감각존 벽면 배경</td></tr>
+            <tr><td><strong>??</strong></td><td>소품·바구니 (교구 보관)</td></tr>
+            <tr><td><strong>안전 매트 + 원목 마루</strong></td><td>바닥 전면 (자연 색감)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="gap-md">
+          <div class="t-tag muted" style="font-size:10px; margin-bottom:8px;">피해야 할 소재</div>
+          <div class="t-caption muted">
+            유광 플라스틱 대형 소품 / 원색(빨강·파랑·노랑) 가구·마감재 / 형광 조명 (5000K 이상)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 13 — FIELD CHECKLIST
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide light" id="s14">
+  <span class="slide-num">17 / 18</span>
+  <div class="slide-inner">
+    <div class="t-tag gap-sm" style="color:var(--primary)">8. 오늘 현장에서</div>
+    <div class="t-display gap-md">인테리어 업체와 함께 확인할 10가지</div>
+
+    <div class="two-col">
+      <ul class="checklist" style="margin-top:0;">
+        <li>
+          <div class="check-box"></div>
+          <div><strong>1. 전기 계약 용량</strong><br><span class="muted" style="font-size:12px;">인덕션+에어컨 동시 증설 가능 여부 — 사업 전제 조건</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>2. 후드 외벽 배기구 위치</strong><br><span class="muted" style="font-size:12px;">주방 후드 설치 방향 결정</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>3. 기존 화장실 위치·구조</strong><br><span class="muted" style="font-size:12px;">리모델링 vs 부분 신설 판단</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>4. 감각존 바닥 상태</strong><br><span class="muted" style="font-size:12px;">매트 포설 가능 여부, 하지층 확인</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>5. 배수선 위치</strong><br><span class="muted" style="font-size:12px;">주방·바·수유실 배수 설계 출발점</span></div>
+        </li>
+      </ul>
+      <ul class="checklist" style="margin-top:0;">
+        <li>
+          <div class="check-box"></div>
+          <div><strong>6. 창문 방향·크기·뷰</strong><br><span class="muted" style="font-size:12px;">자연광 각도, 나무·잔디 뷰 확인, 조명 설계 출발점</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>7. 기존 조명 배선·분전반</strong><br><span class="muted" style="font-size:12px;">조명 교체 범위·비용 파악</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>8. 옥상 면적·방수·난간</strong><br><span class="muted" style="font-size:12px;">옥상 운영 방향 결정</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>9. 계단 폭·핸드레일</strong><br><span class="muted" style="font-size:12px;">유아차·아기 안고 이동 동선 안전성</span></div>
+        </li>
+        <li>
+          <div class="check-box"></div>
+          <div><strong>10. 주차장</strong><br><span class="muted" style="font-size:12px;">공영 vs 사설 — 캐노피 계획에 영향</span></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 16 — CLOSING
+═══════════════════════════════════════════════════════════════════ -->
+<section class="slide dark" id="s16">
+  <span class="slide-num">18 / 18</span>
+  <div class="slide-inner" style="text-align:center;">
+    <div class="t-tag muted-dark gap-sm">무아 베이비 카페&스튜디오</div>
+
+    <div class="t-hero gap-lg" style="letter-spacing:-0.04em;">
+      EOD
+    </div>
+
+    <div class="t-caption" style="opacity:0.25; margin-top:20px;">
+      본 문서의 수치와 평면도는 현장 실측 전 제안서입니다.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FLOATING NAVIGATION
+═══════════════════════════════════════════════════════════════════ -->
+<nav id="pt-nav">
+  <button id="btn-prev" onclick="navigate(-1)" title="이전">◀</button>
+  <span id="pt-counter">1 / 18</span>
+  <button id="btn-next" onclick="navigate(1)" title="다음">▶</button>
+</nav>
+
+<!-- 라이트박스 오버레이 -->
+<div class="lightbox" id="lightbox">
+  <img src="" alt="확대 이미지">
+</div>
+
+
+<script>
+  // ─── 라이트박스: 갤러리 이미지 클릭 시 중앙 확대 ───
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = lightbox.querySelector('img');
+
+  document.querySelectorAll('.img-gallery > img').forEach(img => {
+    img.addEventListener('click', () => {
+      lightboxImg.src = img.src;
+      lightbox.classList.add('open');
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+  }
+
+  lightbox.addEventListener('click', closeLightbox);
+
+  function loadImg(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const img = input.nextElementSibling;
+    img.src = URL.createObjectURL(file);
+    img.classList.add('loaded');
+  }
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('pt-counter');
+  let current = 0;
+
+  function updateCounter() {
+    counter.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  function navigate(dir) {
+    const next = Math.min(Math.max(current + dir, 0), slides.length - 1);
+    slides[next].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Track scroll position
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        current = slides.indexOf(entry.target);
+        updateCounter();
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+      closeLightbox();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      navigate(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      navigate(-1);
+    }
+  });
+
+  updateCounter();
+</script>
+
+</body>
+</html>
